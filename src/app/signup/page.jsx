@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import useAuthRedirect from "@/hooks/useAuthRedirect";
 
 export default function SignupPage() {
+  useAuthRedirect({ protectedRoute: false });
   const [isLoading, setIsLoading] = useState(false);
   const [profilePicture, setProfilePicture] = useState(null);
 
@@ -45,14 +46,11 @@ export default function SignupPage() {
       // Handle error (e.g., show error message)
     }
 
-    // Here you would typically send the form data to your API
-    // including the profilePicture (base64 string or File object)
-
     setIsLoading(false);
     // Redirect to dashboard or home page after successful signup
   };
 
-  useAuthRedirect(); // Redirects to dashboard if user is already authenticated
+
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100 flex flex-col">

@@ -3,7 +3,7 @@ import HeroSection from "@/components/hero-section";
 
 
 export default function Home() {
-  useAuthRedirect();
+
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100">

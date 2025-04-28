@@ -1,4 +1,5 @@
 import { DashboardSidebar } from "@/components/dashboard/sidebar";
+import { Toaster } from "sonner";
 
 export default function DashboardLayout({ children }) {
   return (
@@ -7,6 +8,7 @@ export default function DashboardLayout({ children }) {
         <DashboardSidebar />
         <main className="flex-1 overflow-y-auto bg-gray-950 p-4 md:p-6">
           {children}
+          <Toaster/>
         </main>
       </div>
     </div>

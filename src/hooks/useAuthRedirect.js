@@ -1,20 +1,25 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/useAuth";
 
-export default function useAuthRedirect() {
+export default function useAuthRedirect({ protectedRoute = false }) {
   const router = useRouter();
-  const user = useAuthStore((state) => state?.user);
+  const pathname = usePathname();
+  const user = useAuthStore((state) => state.user);
 
   useEffect(() => {
-    console.log("User in useAuthRedirect:", user); // Debugging line
-    if (router && !user) {
+    if (!router || !pathname) return;
+
+    if (protectedRoute && !user) {
+      console.log("Protected route, no user -> redirect to signin");
       router.replace("/signin");
-    } else if (router) {
-      console.log("User exists, redirecting to dashboard"); // Debugging line
+    }
+
+    if (!protectedRoute && user) {
+      console.log("Guest-only page, but user logged in -> redirect to dashboard");
       router.replace("/dashboard");
     }
-  }, [user, router]);
+  }, [user, router, pathname, protectedRoute]);
 }

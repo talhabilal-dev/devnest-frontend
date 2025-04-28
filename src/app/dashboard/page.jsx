@@ -13,7 +13,7 @@ import { RecentComments } from "@/components/dashboard/recent-comments";
 import useAuthRedirect from "@/hooks/useAuthRedirect";
 
 export default function DashboardPage() {
-  useAuthRedirect(); // Redirects to sign-in if user is not authenticated
+  // useAuthRedirect({ protectedRoute: true }); 
   return (
     <div className="space-y-6">
       <DashboardHeader
