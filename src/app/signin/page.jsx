@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-
+import api from "@/lib/axios";
 export default function SigninPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -24,32 +24,26 @@ export default function SigninPage() {
     const email = emailRef.current.value;
     const password = passwordRef.current.value;
 
-    // Simulate API call
-    const response = await fetch(`http://localhost:3000/api/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const response = await api.post("/auth/login", { email, password });
 
-    const data = await response.json(); // Assuming your API returns a JSON response
-
-    console.log(data); // Log the response data for debugging
-
-    if (data.success) {
-      toast.success("Logged in successfully!");
-      // Redirect to dashboard or home page
-      router.push("/dashboard");
-    } else {
-      toast.error("Error logging in. Please try again.");
+      if (response?.data?.success) {
+        toast.success("Logged in successfully!");
+        router.push("/dashboard");
+      } else {
+        toast.error(response?.data?.message || "Login failed.");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || "Something went wrong!");
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100 flex flex-col">
+      {/* Back to Home */}
       <div className="container mx-auto px-4 py-8">
         <Link
           href="/"
@@ -60,6 +54,7 @@ export default function SigninPage() {
         </Link>
       </div>
 
+      {/* Main Form */}
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <motion.div
           className="w-full max-w-md"
@@ -80,6 +75,7 @@ export default function SigninPage() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-4">
+              {/* Email Input */}
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -92,6 +88,7 @@ export default function SigninPage() {
                 />
               </div>
 
+              {/* Password Input */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password">Password</Label>
@@ -112,6 +109,7 @@ export default function SigninPage() {
                 />
               </div>
 
+              {/* Remember Me */}
               <div className="flex items-center space-x-2">
                 <Checkbox id="remember" />
                 <Label htmlFor="remember" className="text-sm font-normal">
@@ -120,6 +118,7 @@ export default function SigninPage() {
               </div>
             </div>
 
+            {/* Submit Button */}
             <Button
               type="submit"
               className="w-full bg-purple-600 hover:bg-purple-700 text-white"
@@ -128,6 +127,7 @@ export default function SigninPage() {
               {isLoading ? "Signing in..." : "Sign in"}
             </Button>
 
+            {/* Sign up Redirect */}
             <p className="text-center text-gray-400 text-sm">
               Don't have an account?{" "}
               <Link
