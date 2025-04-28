@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState ,useRef } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
@@ -8,21 +8,41 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "sonner";
+
 
 export default function SigninPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const emailRef = useRef();
+  const passwordRef = useRef();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const email = emailRef.current.value;
+    const password = passwordRef.current.value;
 
-    // Here you would typically send the form data to your API
+    // Simulate API call
+    const response = await fetch(`http://localhost:3000/api/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await response.json(); // Assuming your API returns a JSON response
+
+    console.log(data); // Log the response data for debugging
+
+    if (data.success) {
+      toast.success("Logged in successfully!");
+    } else {
+      toast.error("Error logging in. Please try again.");
+    }
 
     setIsLoading(false);
-    // Redirect to dashboard or home page after successful signin
   };
 
   return (
@@ -64,6 +84,7 @@ export default function SigninPage() {
                   type="email"
                   placeholder="john@example.com"
                   required
+                  ref={emailRef}
                   className="bg-gray-900 border-gray-800 focus:border-purple-500"
                 />
               </div>
@@ -83,6 +104,7 @@ export default function SigninPage() {
                   type="password"
                   placeholder="••••••••"
                   required
+                  ref={passwordRef}
                   className="bg-gray-900 border-gray-800 focus:border-purple-500"
                 />
               </div>
@@ -102,34 +124,6 @@ export default function SigninPage() {
             >
               {isLoading ? "Signing in..." : "Sign in"}
             </Button>
-
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-800"></div>
-              </div>
-              <div className="relative flex justify-center text-xs">
-                <span className="px-2 bg-gray-950 text-gray-400">
-                  Or continue with
-                </span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <Button
-                type="button"
-                variant="outline"
-                className="border-gray-800 text-gray-300 hover:bg-gray-800"
-              >
-                Google
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                className="border-gray-800 text-gray-300 hover:bg-gray-800"
-              >
-                GitHub
-              </Button>
-            </div>
 
             <p className="text-center text-gray-400 text-sm">
               Don't have an account?{" "}

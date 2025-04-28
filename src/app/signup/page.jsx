@@ -1,36 +1,63 @@
-"use client"
-import { useState } from "react"
-import Link from "next/link"
-import { motion } from "framer-motion"
-import { ArrowLeft } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox"
-import ProfilePictureUpload from "@/components/profile-picture-upload"
+"use client";
+import { useState } from "react";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import ProfilePictureUpload from "@/components/profile-picture-upload";
+import axios from "axios";
+import { toast } from "sonner";
 
 export default function SignupPage() {
-  const [isLoading, setIsLoading] = useState(false)
-  const [profilePicture, setProfilePicture] = useState(null)
+  const [isLoading, setIsLoading] = useState(false);
+  const [profilePicture, setProfilePicture] = useState(null);
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
 
+    const formData = new FormData(e.target);
+    formData.append("profilePicture", profilePicture);
+
+    const data = {
+      name: formData.get("name"),
+      username: formData.get("username"),
+      email: formData.get("email"),
+      password: formData.get("password"),
+    };
     // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+
+    const response = await axios.post(`http://localhost:3000/api/auth/register`, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    if (response.status === 200) {
+      toast.success("Account created successfully!");
+      // Redirect to dashboard or home page after successful signup
+    } else {
+      toast.error("Error creating account. Please try again.");
+      // Handle error (e.g., show error message)
+    }
 
     // Here you would typically send the form data to your API
     // including the profilePicture (base64 string or File object)
 
-    setIsLoading(false)
+    setIsLoading(false);
     // Redirect to dashboard or home page after successful signup
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100 flex flex-col">
       <div className="container mx-auto px-4 py-8">
-        <Link href="/" className="inline-flex items-center text-gray-400 hover:text-white transition-colors">
+        <Link
+          href="/"
+          className="inline-flex items-center text-gray-400 hover:text-white transition-colors"
+        >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to home
         </Link>
@@ -51,13 +78,18 @@ export default function SignupPage() {
               <span className="font-bold text-xl">BlogSpace</span>
             </div>
             <h1 className="text-3xl font-bold">Create your account</h1>
-            <p className="text-gray-400 mt-2">Join our community of writers and readers</p>
+            <p className="text-gray-400 mt-2">
+              Join our community of writers and readers
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-4">
               <div className="mx-auto w-32">
-                <ProfilePictureUpload value={profilePicture} onChange={setProfilePicture} />
+                <ProfilePictureUpload
+                  value={profilePicture}
+                  onChange={setProfilePicture}
+                />
               </div>
 
               <div className="space-y-2">
@@ -65,6 +97,16 @@ export default function SignupPage() {
                 <Input
                   id="name"
                   placeholder="John Doe"
+                  required
+                  className="bg-gray-900 border-gray-800 focus:border-purple-500"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="username">UserName</Label>
+                <Input
+                  id="username"
+                  placeholder="jhondoe"
                   required
                   className="bg-gray-900 border-gray-800 focus:border-purple-500"
                 />
@@ -90,31 +132,46 @@ export default function SignupPage() {
                   required
                   className="bg-gray-900 border-gray-800 focus:border-purple-500"
                 />
-                <p className="text-xs text-gray-400">Must be at least 8 characters long</p>
+                <p className="text-xs text-gray-400">
+                  Must be at least 8 characters long
+                </p>
               </div>
 
               <div className="flex items-center space-x-2">
                 <Checkbox id="terms" required />
                 <Label htmlFor="terms" className="text-sm font-normal">
                   I agree to the{" "}
-                  <Link href="/terms" className="text-purple-400 hover:text-purple-300">
+                  <Link
+                    href="/terms"
+                    className="text-purple-400 hover:text-purple-300"
+                  >
                     Terms of Service
                   </Link>{" "}
                   and{" "}
-                  <Link href="/privacy" className="text-purple-400 hover:text-purple-300">
+                  <Link
+                    href="/privacy"
+                    className="text-purple-400 hover:text-purple-300"
+                  >
                     Privacy Policy
                   </Link>
                 </Label>
               </div>
             </div>
 
-            <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700 text-white" disabled={isLoading}>
+            <Button
+              type="submit"
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+              disabled={isLoading}
+            >
               {isLoading ? "Creating account..." : "Create account"}
             </Button>
 
             <p className="text-center text-gray-400 text-sm">
               Already have an account?{" "}
-              <Link href="/signin" className="text-purple-400 hover:text-purple-300">
+              <Link
+                href="/signin"
+                className="text-purple-400 hover:text-purple-300"
+              >
                 Sign in
               </Link>
             </p>
@@ -122,5 +179,5 @@ export default function SignupPage() {
         </motion.div>
       </div>
     </div>
-  )
+  );
 }
