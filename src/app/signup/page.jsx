@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import ProfilePictureUpload from "@/components/profile-picture-upload";
 import axios from "axios";
 import { toast } from "sonner";
+import useAuthRedirect from "@/hooks/useAuthRedirect";
 
 export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -50,6 +51,8 @@ export default function SignupPage() {
     setIsLoading(false);
     // Redirect to dashboard or home page after successful signup
   };
+
+  useAuthRedirect(); // Redirects to dashboard if user is already authenticated
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100 flex flex-col">

@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import useAuthRedirect from "@/hooks/useAuthRedirect";
 import api from "@/lib/axios";
 import { useAuthStore } from "@/store/useAuth"; // Assuming you have a store for authentication
 export default function SigninPage() {
