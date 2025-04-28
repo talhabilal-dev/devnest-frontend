@@ -21,7 +21,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import api from "@/lib/axios";
-import { useAuthStore } from "@/store/useAuth";
 export function DashboardSidebar() {
   const router = useRouter();
   const pathname = usePathname();
@@ -44,8 +43,6 @@ export function DashboardSidebar() {
     const data = response.data;
 
     if (data.success) {
-      // Clear user data from the store
-      useAuthStore.setState({ user: null, accessToken: null });
       toast.success("Successfully signed out");
       closeSidebar();
       router.push("/signin");

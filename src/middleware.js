@@ -2,30 +2,36 @@ import { NextResponse } from "next/server";
 
 export function middleware(request) {
   const token = request.cookies.get("accessToken")?.value;
+  const { pathname } = request.nextUrl;
 
   const protectedRoutes = ["/dashboard", "/profile", "/settings"];
 
-  if (
-    protectedRoutes.some((route) => request.nextUrl.pathname.startsWith(route))
-  ) {
+  // ✅ If accessing protected routes and no token, redirect to signin
+  if (protectedRoutes.some((route) => pathname.startsWith(route))) {
     if (!token) {
       return NextResponse.redirect(new URL("/signin", request.url));
     }
   }
 
-  if (token && request.nextUrl.pathname.startsWith("/signin")) {
+  // ✅ If logged in and trying to access signin/signup, redirect to dashboard
+  if (
+    token &&
+    (pathname.startsWith("/signin") || pathname.startsWith("/signup"))
+  ) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
-  if (token && request.nextUrl.pathname.startsWith("/signup")) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
-  }
-
-  // Allow request to continue
+  // ✅ Otherwise, allow the request
   return NextResponse.next();
 }
 
-// Only run on these routes
+// ✅ Match all relevant routes
 export const config = {
-  matcher: ["/dashboard/:path*", "/profile/:path*", "/settings/:path*"],
+  matcher: [
+    "/dashboard/:path*",
+    "/profile/:path*",
+    "/settings/:path*",
+    "/signin",
+    "/signup",
+  ],
 };
