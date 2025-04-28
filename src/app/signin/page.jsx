@@ -1,6 +1,6 @@
 "use client";
 
-import { useState ,useRef } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
@@ -9,9 +9,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-
+import { useRouter } from "next/navigation";
 
 export default function SigninPage() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const emailRef = useRef();
   const passwordRef = useRef();
@@ -38,6 +39,8 @@ export default function SigninPage() {
 
     if (data.success) {
       toast.success("Logged in successfully!");
+      // Redirect to dashboard or home page
+      router.push("/dashboard");
     } else {
       toast.error("Error logging in. Please try again.");
     }
