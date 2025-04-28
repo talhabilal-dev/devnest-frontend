@@ -1,7 +1,10 @@
 import Link from "next/link";
 import HeroSection from "@/components/hero-section";
 
+
 export default function Home() {
+  useAuthRedirect();
+
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100">
       <header className="container mx-auto py-6 px-4 flex items-center justify-between">

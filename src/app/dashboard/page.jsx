@@ -1,3 +1,4 @@
+"use client";
 import {
   Card,
   CardContent,
@@ -9,8 +10,10 @@ import { DashboardHeader } from "@/components/dashboard/header";
 import { RecentPosts } from "@/components/dashboard/recent-posts";
 import { StatsCards } from "@/components/dashboard/stats-cards";
 import { RecentComments } from "@/components/dashboard/recent-comments";
+import useAuthRedirect from "@/hooks/useAuthRedirect";
 
 export default function DashboardPage() {
+  useAuthRedirect(); // Redirects to sign-in if user is not authenticated
   return (
     <div className="space-y-6">
       <DashboardHeader

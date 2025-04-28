@@ -11,6 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import api from "@/lib/axios";
+import { useAuthStore } from "@/store/useAuth"; // Assuming you have a store for authentication
 export default function SigninPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -26,9 +27,11 @@ export default function SigninPage() {
 
     try {
       const response = await api.post("/auth/login", { email, password });
-
       if (response?.data?.success) {
         toast.success("Logged in successfully!");
+
+        const { user, accessToken } = response.data.data;
+        useAuthStore.setState({ user, accessToken });
         router.push("/dashboard");
       } else {
         toast.error(response?.data?.message || "Login failed.");

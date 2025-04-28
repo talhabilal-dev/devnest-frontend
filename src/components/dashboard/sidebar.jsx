@@ -20,7 +20,8 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
-
+import api from "@/lib/axios";
+import { useAuthStore } from "@/store/useAuth";
 export function DashboardSidebar() {
   const router = useRouter();
   const pathname = usePathname();
@@ -36,19 +37,15 @@ export function DashboardSidebar() {
 
   const handleSignOut = async () => {
     // Handle sign out logic here
-    const response = await fetch("http://localhost:3000/api/auth/logout", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
 
-    const data = await response.json(); // Assuming your API returns a JSON response
+    const response = await api.post("/auth/logout", {}); // Adjust the endpoint as needed
+    // Assuming your API returns a JSON response
 
-    console.log(data); // Log the response data for debugging
+    const data = response.data;
 
     if (data.success) {
-      // Redirect to the login page or perform any other action after sign out
+      // Clear user data from the store
+      useAuthStore.setState({ user: null, accessToken: null });
       toast.success("Successfully signed out");
       closeSidebar();
       router.push("/signin");
