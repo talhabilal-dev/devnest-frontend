@@ -10,10 +10,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import ProfilePictureUpload from "@/components/profile-picture-upload";
 import axios from "axios";
 import { toast } from "sonner";
-import useAuthRedirect from "@/hooks/useAuthRedirect";
 
 export default function SignupPage() {
-  useAuthRedirect({ protectedRoute: false });
   const [isLoading, setIsLoading] = useState(false);
   const [profilePicture, setProfilePicture] = useState(null);
 
@@ -32,11 +30,15 @@ export default function SignupPage() {
     };
     // Simulate API call
 
-    const response = await axios.post(`http://localhost:3000/api/auth/register`, data, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const response = await axios.post(
+      `http://localhost:3000/api/auth/register`,
+      data,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
 
     if (response.status === 200) {
       toast.success("Account created successfully!");
@@ -49,8 +51,6 @@ export default function SignupPage() {
     setIsLoading(false);
     // Redirect to dashboard or home page after successful signup
   };
-
-
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100 flex flex-col">
