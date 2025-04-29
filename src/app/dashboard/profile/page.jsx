@@ -1,3 +1,4 @@
+"use client";
 import { DashboardHeader } from "@/components/dashboard/header";
 import {
   Card,
@@ -11,9 +12,40 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import api from "@/lib/axios";
 import { Separator } from "@/components/ui/separator";
+import { useEffect, useState } from "react";
 
 export default function ProfilePage() {
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+
+  const handleAvatarChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file && file.type.startsWith("image/")) {
+      setAvatarFile(file);
+    }
+  };
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await api.get("/auth/profile");
+        console.log("User data:", response.data);
+        setUserData(response.data.data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
+  if (!userData) return <div>Error loading user data</div>;
   return (
     <div className="space-y-6">
       <DashboardHeader
@@ -24,7 +56,7 @@ export default function ProfilePage() {
       <div className="grid gap-6 md:grid-cols-2">
         <Card className="border-gray-800 bg-gray-900">
           <CardHeader>
-            <CardTitle>Profile Information</CardTitle>
+            <CardTitle className={"text-2xl text-purple-500"}>Profile Information</CardTitle>
             <CardDescription className="text-gray-400">
               Update your personal information and public profile.
             </CardDescription>
@@ -33,15 +65,13 @@ export default function ProfilePage() {
             <form className="space-y-6">
               <div className="flex flex-col items-center space-y-4">
                 <Avatar className="h-24 w-24">
-                  <AvatarImage
-                    src="/placeholder.svg?height=96&width=96"
-                    alt="Profile"
-                  />
+                  <AvatarImage src={userData.profilePicture} alt="Profile" />
                   <AvatarFallback className="text-2xl">JD</AvatarFallback>
                 </Avatar>
                 <Button
                   variant="outline"
-                  className="border-gray-700 text-gray-300 hover:bg-gray-800"
+                  className="border-gray-700 text-gray-900 hover:bg-gray-800 hover:text-zinc-100"
+                  onClick={handleAvatarChange}
                 >
                   Change Avatar
                 </Button>
@@ -49,21 +79,13 @@ export default function ProfilePage() {
 
               <Separator className="bg-gray-800" />
 
-              <div className="space-y-4">
-                <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-4 text-zinc-300">
+                <div className="grid gap-4 md:grid-cols-1">
                   <div className="space-y-2">
-                    <Label htmlFor="firstName">First Name</Label>
+                    <Label htmlFor="fullname">Full Name</Label>
                     <Input
-                      id="firstName"
-                      defaultValue="John"
-                      className="bg-gray-800 border-gray-700 focus:border-purple-500"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="lastName">Last Name</Label>
-                    <Input
-                      id="lastName"
-                      defaultValue="Doe"
+                      id="fullname"
+                      defaultValue={userData.name || "N/A"}
                       className="bg-gray-800 border-gray-700 focus:border-purple-500"
                     />
                   </div>
@@ -74,7 +96,7 @@ export default function ProfilePage() {
                   <Input
                     id="email"
                     type="email"
-                    defaultValue="john@example.com"
+                    defaultValue={userData.email || "N/A"}
                     className="bg-gray-800 border-gray-700 focus:border-purple-500"
                   />
                 </div>
@@ -83,7 +105,7 @@ export default function ProfilePage() {
                   <Label htmlFor="username">Username</Label>
                   <Input
                     id="username"
-                    defaultValue="johndoe"
+                    defaultValue={userData.username || "N/A"}
                     className="bg-gray-800 border-gray-700 focus:border-purple-500"
                   />
                 </div>
@@ -92,7 +114,7 @@ export default function ProfilePage() {
                   <Label htmlFor="bio">Bio</Label>
                   <Textarea
                     id="bio"
-                    defaultValue="Writer, blogger, and tech enthusiast."
+                    defaultValue={userData.bio || "Tell us about yourself..."}
                     className="min-h-[100px] bg-gray-800 border-gray-700 focus:border-purple-500"
                   />
                 </div>
@@ -109,7 +131,7 @@ export default function ProfilePage() {
           <Card className="border-gray-800 bg-gray-900">
             <CardHeader>
               <CardTitle>Account Statistics</CardTitle>
-              <CardDescription className="text-gray-400">
+              <CardDescription className="text-gray-200">
                 Your account activity and statistics.
               </CardDescription>
             </CardHeader>

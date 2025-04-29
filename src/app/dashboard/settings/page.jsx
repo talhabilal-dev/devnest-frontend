@@ -1,3 +1,4 @@
+"use client";
 import { DashboardHeader } from "@/components/dashboard/header";
 import {
   Card,
@@ -8,8 +9,18 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
 import { Input } from "@/components/ui/input";
 
 export default function SettingsPage() {
@@ -23,111 +34,15 @@ export default function SettingsPage() {
       <div className="grid gap-6">
         <Card className="border-gray-800 bg-gray-900">
           <CardHeader>
-            <CardTitle>Notifications</CardTitle>
-            <CardDescription className="text-gray-400">
-              Configure how you receive notifications.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="email-notifications">
-                    Email Notifications
-                  </Label>
-                  <p className="text-sm text-gray-400">
-                    Receive email notifications about your activity.
-                  </p>
-                </div>
-                <Switch id="email-notifications" defaultChecked />
-              </div>
-
-              <Separator className="bg-gray-800" />
-
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="comment-notifications">
-                    Comment Notifications
-                  </Label>
-                  <p className="text-sm text-gray-400">
-                    Get notified when someone comments on your posts.
-                  </p>
-                </div>
-                <Switch id="comment-notifications" defaultChecked />
-              </div>
-
-              <Separator className="bg-gray-800" />
-
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="marketing-emails">Marketing Emails</Label>
-                  <p className="text-sm text-gray-400">
-                    Receive emails about new features and updates.
-                  </p>
-                </div>
-                <Switch id="marketing-emails" />
-              </div>
-
-              <Separator className="bg-gray-800" />
-
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="social-notifications">
-                    Social Notifications
-                  </Label>
-                  <p className="text-sm text-gray-400">
-                    Get notified when someone follows you or likes your post.
-                  </p>
-                </div>
-                <Switch id="social-notifications" defaultChecked />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-gray-800 bg-gray-900">
-          <CardHeader>
-            <CardTitle>Appearance</CardTitle>
-            <CardDescription className="text-gray-400">
-              Customize how the dashboard looks.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="dark-mode">Dark Mode</Label>
-                  <p className="text-sm text-gray-400">
-                    Use dark mode for the dashboard.
-                  </p>
-                </div>
-                <Switch id="dark-mode" defaultChecked />
-              </div>
-
-              <Separator className="bg-gray-800" />
-
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="compact-view">Compact View</Label>
-                  <p className="text-sm text-gray-400">
-                    Use a more compact layout for the dashboard.
-                  </p>
-                </div>
-                <Switch id="compact-view" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-gray-800 bg-gray-900">
-          <CardHeader>
-            <CardTitle>Security</CardTitle>
+            <CardTitle className={"text-lg font-medium text-purple-600"}>
+              Security
+            </CardTitle>
             <CardDescription className="text-gray-400">
               Manage your account security settings.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-6">
+            <div className="space-y-6 text-zinc-100">
               <div className="space-y-4">
                 <h3 className="text-lg font-medium">Change Password</h3>
                 <div className="space-y-2">
@@ -158,44 +73,15 @@ export default function SettingsPage() {
                   Update Password
                 </Button>
               </div>
-
-              <Separator className="bg-gray-800" />
-
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label htmlFor="two-factor">
-                      Two-Factor Authentication
-                    </Label>
-                    <p className="text-sm text-gray-400">
-                      Add an extra layer of security to your account.
-                    </p>
-                  </div>
-                  <Switch id="two-factor" />
-                </div>
-
-                <Separator className="bg-gray-800" />
-
-                <div>
-                  <h3 className="text-lg font-medium mb-2">Sessions</h3>
-                  <p className="text-sm text-gray-400 mb-4">
-                    Manage your active sessions and sign out from other devices.
-                  </p>
-                  <Button
-                    variant="outline"
-                    className="border-gray-700 text-gray-300 hover:bg-gray-800"
-                  >
-                    Sign Out From All Devices
-                  </Button>
-                </div>
-              </div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="border-gray-800 bg-gray-900">
           <CardHeader>
-            <CardTitle>Danger Zone</CardTitle>
+            <CardTitle className={"text-lg font-medium text-red-500"}>
+              Danger Zone
+            </CardTitle>
             <CardDescription className="text-gray-400">
               Irreversible actions for your account.
             </CardDescription>
@@ -210,7 +96,40 @@ export default function SettingsPage() {
                   Once you delete your account, there is no going back. Please
                   be certain.
                 </p>
-                <Button variant="destructive">Delete Account</Button>
+
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" className={"cursor-pointer"}>
+                      Delete Account
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="bg-gray-900 border border-gray-800 text-white">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Are you absolutely sure?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription className="text-gray-400">
+                        This action cannot be undone. This will permanently
+                        delete your account and remove your data from our
+                        servers.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel className="bg-gray-800 border-gray-700 hover:bg-gray-700 text-white cursor-pointer">
+                        Cancel
+                      </AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => {
+                          // TODO: Call your delete API here
+                          console.log("Account deletion triggered");
+                        }}
+                        className="bg-red-600 hover:bg-red-700 text-white cursor-pointer"
+                      >
+                        Yes, delete it
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </div>
           </CardContent>
