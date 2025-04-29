@@ -8,9 +8,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import ProfilePictureUpload from "@/components/profile-picture-upload";
 import api from "@/lib/axios";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 export default function SignupPage() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [profilePicture, setProfilePicture] = useState(null);
 
@@ -47,13 +49,15 @@ export default function SignupPage() {
       toast.error("Username is already taken.");
       return;
     }
+    
 
     try {
       setIsLoading(true);
       const formData = new FormData(e.currentTarget);
       formData.append("profilePicture", profilePicture || "");
 
-      const res = await api.post("/register", formData, {
+      console.log(formData);
+      const res = await api.post("/auth/register", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -79,7 +83,7 @@ export default function SignupPage() {
         </Link>
       </div>
 
-      <div className="flex-1 flex items-center justify-center px-4 py-12">
+      <div className="flex-1 flex items-center justify-center px-4">
         <motion.div
           className="w-full max-w-md"
           initial={{ opacity: 0, y: 20 }}

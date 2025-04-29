@@ -11,11 +11,7 @@ export default function ProfilePictureUpload({ value, onChange }) {
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        onChange(event.target?.result);
-      };
-      reader.readAsDataURL(file);
+      onChange(file);
     }
   };
 
@@ -54,6 +50,8 @@ export default function ProfilePictureUpload({ value, onChange }) {
     }
   };
 
+  const preview = value ? URL.createObjectURL(value) : "/placeholder.svg";
+
   return (
     <div className="relative">
       <input
@@ -79,23 +77,16 @@ export default function ProfilePictureUpload({ value, onChange }) {
         whileHover={{ scale: 1.05 }}
         transition={{ duration: 0.2 }}
       >
-        {value ? (
-          <div className="relative w-full h-full">
-            <img
-              src={value || "/placeholder.svg"}
-              alt="Profile"
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-40 transition-all flex items-center justify-center opacity-0 hover:opacity-100">
-              <Upload className="h-6 w-6 text-white" />
-            </div>
+        <div className="relative w-full h-full">
+          <img
+            src={preview}
+            alt="Profile"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-40 transition-all flex items-center justify-center opacity-0 hover:opacity-100">
+            <Upload className="h-6 w-6 text-white" />
           </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center text-gray-400">
-            <User className="h-10 w-10 mb-2" />
-            <span className="text-xs text-center">Upload photo</span>
-          </div>
-        )}
+        </div>
       </motion.div>
 
       {value && (
