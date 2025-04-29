@@ -1,55 +1,70 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import ProfilePictureUpload from "@/components/profile-picture-upload";
-import axios from "axios";
+import api from "@/lib/axios";
 import { toast } from "sonner";
 
 export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [profilePicture, setProfilePicture] = useState(null);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
+  const [username, setUsername] = useState("");
+  const [isUsernameAvailable, setIsUsernameAvailable] = useState(null);
+  const [checkingUsername, setCheckingUsername] = useState(false);
 
-    const formData = new FormData(e.target);
-    formData.append("profilePicture", profilePicture);
-
-    const data = {
-      name: formData.get("name"),
-      username: formData.get("username"),
-      email: formData.get("email"),
-      password: formData.get("password"),
-    };
-    // Simulate API call
-
-    const response = await axios.post(
-      `http://localhost:3000/api/auth/register`,
-      data,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
-
-    if (response.status === 200) {
-      toast.success("Account created successfully!");
-      // Redirect to dashboard or home page after successful signup
-    } else {
-      toast.error("Error creating account. Please try again.");
-      // Handle error (e.g., show error message)
+  useEffect(() => {
+    if (!username) {
+      setIsUsernameAvailable(null);
+      return;
     }
 
-    setIsLoading(false);
-    // Redirect to dashboard or home page after successful signup
+    const delayDebounceFn = setTimeout(async () => {
+      try {
+        setCheckingUsername(true);
+        const res = await api.post(`/auth/check-username/${username}`);
+
+        setIsUsernameAvailable(res.data.data.available);
+      } catch (error) {
+        console.error(error);
+        setIsUsernameAvailable(false);
+      } finally {
+        setCheckingUsername(false);
+      }
+    }, 500); // debounce 500ms
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [username]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (isUsernameAvailable === false) {
+      toast.error("Username is already taken.");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const formData = new FormData(e.currentTarget);
+      formData.append("profilePicture", profilePicture || "");
+
+      const res = await api.post("/register", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      toast.success("Account created successfully!");
+      router.push("/signin");
+    } catch (error) {
+      console.error(error);
+      toast.error(error?.response?.data?.message || "Something went wrong.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -76,7 +91,7 @@ export default function SignupPage() {
               <div className="h-8 w-8 rounded-full bg-purple-600 flex items-center justify-center">
                 <span className="font-bold text-white">B</span>
               </div>
-              <span className="font-bold text-xl">BlogSpace</span>
+              <span className="font-bold text-xl">DevNest</span>
             </div>
             <h1 className="text-3xl font-bold">Create your account</h1>
             <p className="text-gray-400 mt-2">
@@ -97,6 +112,7 @@ export default function SignupPage() {
                 <Label htmlFor="name">Full Name</Label>
                 <Input
                   id="name"
+                  name="name"
                   placeholder="John Doe"
                   required
                   className="bg-gray-900 border-gray-800 focus:border-purple-500"
@@ -104,19 +120,41 @@ export default function SignupPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="username">UserName</Label>
+                <Label htmlFor="username">Username</Label>
                 <Input
                   id="username"
-                  placeholder="jhondoe"
+                  name="username"
+                  type="text"
+                  placeholder="johndoe"
                   required
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   className="bg-gray-900 border-gray-800 focus:border-purple-500"
                 />
+                {username && (
+                  <p className="text-xs mt-1">
+                    {checkingUsername ? (
+                      <span className="text-gray-400">
+                        Checking availability...
+                      </span>
+                    ) : isUsernameAvailable ? (
+                      <span className="text-green-400">
+                        Username is available!
+                      </span>
+                    ) : (
+                      <span className="text-red-400">
+                        Username is already taken.
+                      </span>
+                    )}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
+                  name="email"
                   type="email"
                   placeholder="john@example.com"
                   required
@@ -128,6 +166,7 @@ export default function SignupPage() {
                 <Label htmlFor="password">Password</Label>
                 <Input
                   id="password"
+                  name="password"
                   type="password"
                   placeholder="••••••••"
                   required
@@ -136,26 +175,6 @@ export default function SignupPage() {
                 <p className="text-xs text-gray-400">
                   Must be at least 8 characters long
                 </p>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Checkbox id="terms" required />
-                <Label htmlFor="terms" className="text-sm font-normal">
-                  I agree to the{" "}
-                  <Link
-                    href="/terms"
-                    className="text-purple-400 hover:text-purple-300"
-                  >
-                    Terms of Service
-                  </Link>{" "}
-                  and{" "}
-                  <Link
-                    href="/privacy"
-                    className="text-purple-400 hover:text-purple-300"
-                  >
-                    Privacy Policy
-                  </Link>
-                </Label>
               </div>
             </div>
 

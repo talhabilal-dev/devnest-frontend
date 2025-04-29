@@ -12,7 +12,7 @@ export default function Home() {
           <div className="h-8 w-8 rounded-full bg-purple-600 flex items-center justify-center">
             <span className="font-bold text-white">B</span>
           </div>
-          <span className="font-bold text-xl">BlogSpace</span>
+          <span className="font-bold text-xl">DevNest</span>
         </div>
 
         <nav className="hidden md:flex items-center gap-8">
@@ -69,7 +69,7 @@ export default function Home() {
               <div className="h-8 w-8 rounded-full bg-purple-600 flex items-center justify-center">
                 <span className="font-bold text-white">B</span>
               </div>
-              <span className="font-bold text-xl">BlogSpace</span>
+              <span className="font-bold text-xl">DevNest</span>
             </div>
             <p className="text-gray-400 mb-4">
               A modern platform for writers and readers to connect through the
@@ -147,7 +147,7 @@ export default function Home() {
         </div>
 
         <div className="mt-12 pt-8 border-t border-gray-800 text-center text-gray-400">
-          <p>© {new Date().getFullYear()} BlogSpace. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} DevNest. All rights reserved.</p>
         </div>
       </footer>
     </div>

@@ -120,7 +120,7 @@ export function DashboardSidebar() {
               <div className="h-8 w-8 rounded-full bg-purple-600 flex items-center justify-center">
                 <span className="font-bold text-white">B</span>
               </div>
-              <span className="font-bold text-xl">BlogSpace</span>
+              <span className="font-bold text-xl">DevNest</span>
             </Link>
 
             {/* User profile */}
