@@ -15,16 +15,18 @@ import { Textarea } from "@/components/ui/textarea";
 import api from "@/lib/axios";
 import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
+import { AvatarUploadModal } from "@/components/dashboard/avatar-upload-modal";
 
 export default function ProfilePage() {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
 
   const handleAvatarChange = (e) => {
     const file = e.target.files?.[0];
     if (file && file.type.startsWith("image/")) {
       setAvatarFile(file);
+      
     }
   };
 
@@ -56,7 +58,9 @@ export default function ProfilePage() {
       <div className="grid gap-6 md:grid-cols-2">
         <Card className="border-gray-800 bg-gray-900">
           <CardHeader>
-            <CardTitle className={"text-2xl text-purple-500"}>Profile Information</CardTitle>
+            <CardTitle className={"text-2xl text-purple-500"}>
+              Profile Information
+            </CardTitle>
             <CardDescription className="text-gray-400">
               Update your personal information and public profile.
             </CardDescription>
@@ -71,7 +75,7 @@ export default function ProfilePage() {
                 <Button
                   variant="outline"
                   className="border-gray-700 text-gray-900 hover:bg-gray-800 hover:text-zinc-100"
-                  onClick={handleAvatarChange}
+                  onClick={() => setIsAvatarModalOpen(true)}
                 >
                   Change Avatar
                 </Button>
@@ -202,6 +206,14 @@ export default function ProfilePage() {
           </Card>
         </div>
       </div>
+
+      <AvatarUploadModal
+        isOpen={isAvatarModalOpen}
+        onClose={() => setIsAvatarModalOpen(false)}
+        // onSave={handleAvatarSave}
+        // currentAvatar={avatarSrc}
+        // initials={avatarInitials}
+      />
     </div>
   );
 }

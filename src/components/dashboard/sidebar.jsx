@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
@@ -25,6 +25,8 @@ export function DashboardSidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [userData, setUserData] = useState(null);
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -52,6 +54,22 @@ export function DashboardSidebar() {
       console.error("Failed to sign out");
     }
   };
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await api.get("/auth/profile");
+        console.log("User data:", response.data);
+        setUserData(response.data.data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const navItems = [
     {
@@ -127,14 +145,14 @@ export function DashboardSidebar() {
             <div className="flex items-center gap-3 rounded-lg border border-gray-800 bg-gray-950/50 p-3">
               <Avatar className="h-10 w-10">
                 <AvatarImage
-                  src="/placeholder.svg?height=40&width=40"
+                  src={userData?.profilePicture}
                   alt="User"
                 />
                 <AvatarFallback>JD</AvatarFallback>
               </Avatar>
               <div className="flex flex-col">
-                <span className="font-medium">John Doe</span>
-                <span className="text-xs text-gray-400">john@example.com</span>
+                <span className="font-medium">{userData?.name}</span>
+                <span className="text-xs text-gray-400">{userData?.email}</span>
               </div>
             </div>
 
