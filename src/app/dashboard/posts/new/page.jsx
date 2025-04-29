@@ -1,47 +1,53 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { DashboardHeader } from "@/components/dashboard/header"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
-import { Separator } from "@/components/ui/separator"
-import { PostEditor } from "@/components/dashboard/post-editor"
-import { AIPostGenerator } from "@/components/dashboard/ai-post-generator"
-import { AIPostAnalyzer } from "@/components/dashboard/ai-post-analyzer"
-import { ImageUpload } from "@/components/dashboard/image-upload"
-import { ArrowLeft, Save } from "lucide-react"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { DashboardHeader } from "@/components/dashboard/header";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
+import { PostEditor } from "@/components/dashboard/post-editor";
+import { AIPostGenerator } from "@/components/dashboard/ai-post-generator";
+import { AIPostAnalyzer } from "@/components/dashboard/ai-post-analyzer";
+import { ImageUpload } from "@/components/dashboard/image-upload";
+import { ArrowLeft, Save } from "lucide-react";
 
 export default function NewPostPage() {
-  const router = useRouter()
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [postContent, setPostContent] = useState("")
-  const [postTitle, setPostTitle] = useState("")
-  const [postExcerpt, setPostExcerpt] = useState("")
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [postContent, setPostContent] = useState("");
+  const [postTitle, setPostTitle] = useState("");
+  const [postExcerpt, setPostExcerpt] = useState("");
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+    e.preventDefault();
+    setIsSubmitting(true);
 
     // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    await new Promise((resolve) => setTimeout(resolve, 1500));
 
     // Here you would typically send the form data to your API
     console.log({
       title: postTitle,
       excerpt: postExcerpt,
       content: postContent,
-    })
+    });
 
-    setIsSubmitting(false)
-    router.push("/dashboard/posts")
-  }
+    setIsSubmitting(false);
+    router.push("/dashboard/posts");
+  };
 
   return (
     <div className="space-y-6">
@@ -118,7 +124,9 @@ export default function NewPostPage() {
             </Card>
           </TabsContent>
           <TabsContent value="ai-generate" className="mt-4">
-            <AIPostGenerator onGenerate={(content) => setPostContent(content)} />
+            <AIPostGenerator
+              onGenerate={(content) => setPostContent(content)}
+            />
           </TabsContent>
           <TabsContent value="ai-analyze" className="mt-4">
             <AIPostAnalyzer content={postContent} />
@@ -191,10 +199,17 @@ export default function NewPostPage() {
             <Separator className="my-6 bg-gray-800" />
 
             <div className="flex justify-end gap-2">
-              <Button variant="outline" className="border-gray-700 text-gray-300 hover:bg-gray-800">
+              <Button
+                variant="outline"
+                className="border-gray-700 text-gray-300 hover:bg-gray-800"
+              >
                 Save as Draft
               </Button>
-              <Button type="submit" className="bg-purple-600 hover:bg-purple-700" disabled={isSubmitting}>
+              <Button
+                type="submit"
+                className="bg-purple-600 hover:bg-purple-700"
+                disabled={isSubmitting}
+              >
                 {isSubmitting ? "Publishing..." : "Publish Post"}
               </Button>
             </div>
@@ -202,5 +217,5 @@ export default function NewPostPage() {
         </Card>
       </form>
     </div>
-  )
+  );
 }

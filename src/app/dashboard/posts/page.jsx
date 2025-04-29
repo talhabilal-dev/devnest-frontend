@@ -97,7 +97,7 @@ export default function PostsPage() {
               {posts.map((post) => (
                 <Link
                   key={post.id}
-                  href={`/dashboard/posts/${post.id}`}
+                  href={`/dashboard/posts/${post.id}/edit`}
                   className="grid grid-cols-12 gap-4 border-t border-gray-800 p-4 hover:bg-gray-800/50 transition-colors"
                 >
                   <div className="col-span-6 font-medium">{post.title}</div>
