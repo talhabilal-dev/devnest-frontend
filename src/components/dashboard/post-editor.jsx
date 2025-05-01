@@ -1,9 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
-import ReactMarkdown from "react-markdown";
+import { useState, useRef } from "react";
 import {
   Bold,
   Italic,
@@ -11,8 +8,8 @@ import {
   ListOrdered,
   Heading1,
   Heading2,
-  Link as LinkIcon,
-  Image as ImageIcon,
+  LinkIcon,
+  ImageIcon,
   Code,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -20,11 +17,9 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { marked } from "marked"; // Ensure you have marked installed
 
-export function PostEditor() {
-  const [markdown, setMarkdown] = useState(
-    "## Hello, Markdown!\n\nWrite something **cool** here."
-  );
+export function PostEditor({ value, onChange }) {
   const [activeTab, setActiveTab] = useState("write");
   const textareaRef = useRef(null);
 
@@ -34,13 +29,12 @@ export function PostEditor() {
 
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
-    const selectedText = markdown.substring(start, end);
-    const beforeText = markdown.substring(0, start);
-    const afterText = markdown.substring(end);
+    const selectedText = value.substring(start, end);
+    const beforeText = value.substring(0, start);
+    const afterText = value.substring(end);
 
-    // Preserve space intentionally when inserting markdown
-    const newText = `${beforeText}${prefix}${selectedText}${suffix}${afterText}`;
-    setMarkdown(newText);
+    const newText = beforeText + prefix + selectedText + suffix + afterText;
+    onChange(newText);
 
     setTimeout(() => {
       textarea.focus();
@@ -83,8 +77,8 @@ export function PostEditor() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-900 text-zinc-100 p-4">
-      <div className="flex items-center gap-1 rounded-md bg-zinc-800 p-1 mb-4">
+    <div className="space-y-4">
+      <div className="flex items-center gap-1 rounded-md bg-gray-800 p-1">
         <ToolbarButton
           icon={<Bold className="h-4 w-4" />}
           label="Bold"
@@ -95,18 +89,18 @@ export function PostEditor() {
           label="Italic"
           onClick={() => handleToolbarAction("italic")}
         />
-        <Separator orientation="vertical" className="mx-1 h-6 bg-zinc-700" />
+        <Separator orientation="vertical" className="mx-1 h-6 bg-gray-700" />
         <ToolbarButton
           icon={<Heading1 className="h-4 w-4" />}
-          label="H1"
+          label="Heading 1"
           onClick={() => handleToolbarAction("h1")}
         />
         <ToolbarButton
           icon={<Heading2 className="h-4 w-4" />}
-          label="H2"
+          label="Heading 2"
           onClick={() => handleToolbarAction("h2")}
         />
-        <Separator orientation="vertical" className="mx-1 h-6 bg-zinc-700" />
+        <Separator orientation="vertical" className="mx-1 h-6 bg-gray-700" />
         <ToolbarButton
           icon={<List className="h-4 w-4" />}
           label="Bullet List"
@@ -117,7 +111,7 @@ export function PostEditor() {
           label="Numbered List"
           onClick={() => handleToolbarAction("ol")}
         />
-        <Separator orientation="vertical" className="mx-1 h-6 bg-zinc-700" />
+        <Separator orientation="vertical" className="mx-1 h-6 bg-gray-700" />
         <ToolbarButton
           icon={<LinkIcon className="h-4 w-4" />}
           label="Link"
@@ -140,69 +134,56 @@ export function PostEditor() {
         onValueChange={setActiveTab}
         className="w-full"
       >
-        <TabsList className="grid w-full grid-cols-2 bg-zinc-800">
+        <TabsList className="grid w-full grid-cols-2 bg-gray-800">
           <TabsTrigger value="write">Write</TabsTrigger>
           <TabsTrigger value="preview">Preview</TabsTrigger>
         </TabsList>
         <TabsContent value="write" className="mt-2">
           <Textarea
             ref={textareaRef}
-            value={markdown}
-            onChange={(e) => setMarkdown(e.target.value)}
-            placeholder="Write your content in Markdown..."
-            className="min-h-[400px] bg-zinc-800 border border-zinc-700 focus:border-purple-500 font-mono"
+            id="markdown-editor"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder="Write your post content in Markdown..."
+            className="min-h-[400px] bg-gray-800 border-gray-700 focus:border-purple-500 font-mono"
           />
         </TabsContent>
         <TabsContent value="preview" className="mt-2">
           <div
             className={cn(
-              "min-h-[400px] rounded-md border border-zinc-700 bg-zinc-800 p-4 overflow-auto",
+              "min-h-[400px] rounded-md border border-gray-700 bg-gray-800 p-4 overflow-auto",
               "prose prose-invert max-w-none prose-headings:text-gray-100 prose-p:text-gray-300",
               "prose-a:text-purple-400 prose-blockquote:border-l-purple-600 prose-blockquote:text-gray-300",
-              "prose-code:bg-zinc-700 prose-code:text-gray-300 prose-pre:bg-zinc-700"
+              "prose-code:bg-gray-700 prose-code:text-gray-300 prose-pre:bg-gray-700"
             )}
-          >
-            <ReactMarkdown
-              components={{
-                code({ node, inline, className, children, ...props }) {
-                  const match = /language-(\w+)/.exec(className || "");
-                  return !inline && match ? (
-                    <SyntaxHighlighter
-                      {...props}
-                      style={oneDark}
-                      language={match[1]}
-                      PreTag="div"
-                    >
-                      {String(children).replace(/\n$/, "")}
-                    </SyntaxHighlighter>
-                  ) : (
-                    <code className="bg-zinc-700 px-1 rounded" {...props}>
-                      {children}
-                    </code>
-                  );
-                },
-              }}
-            >
-              {markdown}
-            </ReactMarkdown>
-          </div>
+            dangerouslySetInnerHTML={{
+              __html: renderMarkdown(value),
+            }}
+          />
         </TabsContent>
       </Tabs>
     </div>
   );
 }
 
+// Helper button component to reduce repetition
 function ToolbarButton({ icon, label, onClick }) {
   return (
     <Button
       type="button"
       variant="ghost"
       size="sm"
-      className="h-8 px-2 text-gray-400 hover:bg-zinc-700 hover:text-white"
+      className="h-8 px-2 text-gray-400 hover:bg-gray-700 hover:text-white"
       onClick={onClick}
     >
       {icon}
       <span className="sr-only">{label}</span>
     </Button>
   );
+}
+
+// Simple markdown renderer
+function renderMarkdown(markdown) {
+  // Assume 'marked' is globally imported or available
+  return marked.parse(markdown || "");
 }
