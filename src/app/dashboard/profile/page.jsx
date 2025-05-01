@@ -16,17 +16,21 @@ import api from "@/lib/axios";
 import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
 import { AvatarUploadModal } from "@/components/dashboard/avatar-upload-modal";
+import { useUser } from "@/lib/UserContext";
 
 export default function ProfilePage() {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
 
+  const { user } = useUser();
+
+  console.log("user", user);
+
   const handleAvatarChange = (e) => {
     const file = e.target.files?.[0];
     if (file && file.type.startsWith("image/")) {
       setAvatarFile(file);
-      
     }
   };
 

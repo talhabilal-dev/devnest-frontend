@@ -1,5 +1,6 @@
 import { DashboardSidebar } from "@/components/dashboard/sidebar";
 import { Toaster } from "sonner";
+import { UserProvider } from "@/lib/UserContext";
 
 export default function DashboardLayout({ children }) {
   return (
@@ -7,8 +8,9 @@ export default function DashboardLayout({ children }) {
       <div className="flex h-screen overflow-hidden">
         <DashboardSidebar />
         <main className="flex-1 overflow-y-auto bg-gray-950 p-4 md:p-6">
-          {children}
-          <Toaster/>
+          <UserProvider>{children}</UserProvider>
+
+          <Toaster />
         </main>
       </div>
     </div>

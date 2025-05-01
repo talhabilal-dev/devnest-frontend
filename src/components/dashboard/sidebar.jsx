@@ -21,12 +21,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import api from "@/lib/axios";
+import { useUser } from "@/lib/UserContext";
+
 export function DashboardSidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [userData, setUserData] = useState(null);
+
+  const { user, loading } = useUser();
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -55,22 +57,6 @@ export function DashboardSidebar() {
     }
   };
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await api.get("/auth/profile");
-        console.log("User data:", response.data);
-        setUserData(response.data.data);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserData();
-  }, []);
-
   const navItems = [
     {
       title: "Home",
@@ -98,6 +84,8 @@ export function DashboardSidebar() {
       icon: Settings,
     },
   ];
+
+  if (loading) return <div>Loading...</div>;
 
   return (
     <>
@@ -144,15 +132,12 @@ export function DashboardSidebar() {
             {/* User profile */}
             <div className="flex items-center gap-3 rounded-lg border border-gray-800 bg-gray-950/50 p-3">
               <Avatar className="h-10 w-10">
-                <AvatarImage
-                  src={userData?.profilePicture}
-                  alt="User"
-                />
+                <AvatarImage src={user?.profilePicture} alt="User" />
                 <AvatarFallback>JD</AvatarFallback>
               </Avatar>
               <div className="flex flex-col">
-                <span className="font-medium">{userData?.name}</span>
-                <span className="text-xs text-gray-400">{userData?.email}</span>
+                <span className="font-medium">{user?.name}</span>
+                <span className="text-xs text-gray-400">{user?.email}</span>
               </div>
             </div>
 
