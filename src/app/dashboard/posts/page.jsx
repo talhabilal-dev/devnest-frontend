@@ -1,11 +1,21 @@
-import { DashboardHeader } from "@/components/dashboard/header"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { PenSquare, Search } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import Link from "next/link"
-import { formatDistanceToNow } from "date-fns"
+"use client";
+import { DashboardHeader } from "@/components/dashboard/header";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { PenSquare, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
+import { formatDistanceToNow } from "date-fns";
+import { useEffect ,useState } from "react";
+
+import api from "@/lib/axios";
 
 const posts = [
   {
@@ -56,9 +66,25 @@ const posts = [
     views: 132,
     comments: 7,
   },
-]
+];
 
 export default function PostsPage() {
+  // const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    async function fetchPosts() {
+      try {
+        const res = await api.get("/posts");
+        console.log("Posts data:", res.data.data);
+        // setPosts(res.data.data); // Uncomment this line to set the posts state with fetched data
+      } catch (err) {
+        console.error("Failed to fetch posts", err);
+      }
+    }
+
+    fetchPosts();
+  }, []);
+
   return (
     <div className="space-y-6">
       <DashboardHeader heading="Posts">
@@ -73,7 +99,9 @@ export default function PostsPage() {
       <Card className="border-gray-800 bg-gray-900">
         <CardHeader>
           <CardTitle>All Posts</CardTitle>
-          <CardDescription className="text-gray-400">Manage your blog posts, drafts, and publications.</CardDescription>
+          <CardDescription className="text-gray-400">
+            Manage your blog posts, drafts, and publications.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -112,9 +140,13 @@ export default function PostsPage() {
                       {post.status}
                     </Badge>
                   </div>
-                  <div className="col-span-2 text-gray-400">{formatDistanceToNow(post.date, { addSuffix: true })}</div>
+                  <div className="col-span-2 text-gray-400">
+                    {formatDistanceToNow(post.date, { addSuffix: true })}
+                  </div>
                   <div className="col-span-1 text-gray-400">{post.views}</div>
-                  <div className="col-span-1 text-gray-400">{post.comments}</div>
+                  <div className="col-span-1 text-gray-400">
+                    {post.comments}
+                  </div>
                 </Link>
               ))}
             </div>
@@ -122,5 +154,5 @@ export default function PostsPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

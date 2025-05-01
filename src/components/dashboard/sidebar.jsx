@@ -21,7 +21,8 @@ import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import api from "@/lib/axios";
 
-import { useUser } from "@/lib/UserContext"; // Assuming you have a UserContext to provide user data
+import { useUser } from "@/lib/UserContext";
+import SidebarSkeleton from "../skeletons/sidebar.skeleton" // Assuming you have a UserContext to provide user data
 
 export function DashboardSidebar() {
   const router = useRouter();
@@ -85,7 +86,7 @@ export function DashboardSidebar() {
     },
   ];
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <SidebarSkeleton />; // Show skeleton while loading user data
   if (!user) return <div>Error loading user data</div>;
 
   return (
