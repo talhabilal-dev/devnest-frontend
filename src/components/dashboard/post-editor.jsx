@@ -38,7 +38,8 @@ export function PostEditor() {
     const beforeText = markdown.substring(0, start);
     const afterText = markdown.substring(end);
 
-    const newText = beforeText + prefix + selectedText + suffix + afterText;
+    // Preserve space intentionally when inserting markdown
+    const newText = `${beforeText}${prefix}${selectedText}${suffix}${afterText}`;
     setMarkdown(newText);
 
     setTimeout(() => {

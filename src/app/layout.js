@@ -19,7 +19,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark overflow-hidden" >
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 dark`}
       >
