@@ -3,6 +3,7 @@ import { Eye, FileText, MessageSquare, ThumbsUp } from "lucide-react";
 import { useUser } from "@/lib/UserContext";
 
 export function StatsCards() {
+  
   const { user, loading } = useUser();
 
   console.log("user", user);

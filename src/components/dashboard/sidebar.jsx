@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -21,14 +20,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import api from "@/lib/axios";
-import { useUser } from "@/lib/UserContext";
+
+import { useUser } from "@/lib/UserContext"; // Assuming you have a UserContext to provide user data
 
 export function DashboardSidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
-  const { user, loading } = useUser();
+  const { user, loading } = useUser(); // Assuming you have a UserContext to provide user data
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -86,6 +86,7 @@ export function DashboardSidebar() {
   ];
 
   if (loading) return <div>Loading...</div>;
+  if (!user) return <div>Error loading user data</div>;
 
   return (
     <>
@@ -133,7 +134,9 @@ export function DashboardSidebar() {
             <div className="flex items-center gap-3 rounded-lg border border-gray-800 bg-gray-950/50 p-3">
               <Avatar className="h-10 w-10">
                 <AvatarImage src={user?.profilePicture} alt="User" />
-                <AvatarFallback>JD</AvatarFallback>
+                <AvatarFallback>
+                  {user?.name ? user.name.slice(0, 2).toUpperCase() : "??"}
+                </AvatarFallback>
               </Avatar>
               <div className="flex flex-col">
                 <span className="font-medium">{user?.name}</span>

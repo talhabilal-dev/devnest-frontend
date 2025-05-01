@@ -19,13 +19,10 @@ import { AvatarUploadModal } from "@/components/dashboard/avatar-upload-modal";
 import { useUser } from "@/lib/UserContext";
 
 export default function ProfilePage() {
-  const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
 
-  const { user } = useUser();
+  const { user, loading } = useUser();
 
-  console.log("user", user);
 
   const handleAvatarChange = (e) => {
     const file = e.target.files?.[0];
@@ -34,24 +31,8 @@ export default function ProfilePage() {
     }
   };
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await api.get("/auth/profile");
-        console.log("User data:", response.data);
-        setUserData(response.data.data);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserData();
-  }, []);
-
   if (loading) return <div>Loading...</div>;
-  if (!userData) return <div>Error loading user data</div>;
+  if (!user) return <div>Error loading user data</div>;
   return (
     <div className="space-y-6">
       <DashboardHeader
@@ -73,8 +54,8 @@ export default function ProfilePage() {
             <form className="space-y-6">
               <div className="flex flex-col items-center space-y-4">
                 <Avatar className="h-24 w-24">
-                  <AvatarImage src={userData.profilePicture} alt="Profile" />
-                  <AvatarFallback className="text-2xl">JD</AvatarFallback>
+                  <AvatarImage src={user.profilePicture} alt="Profile" />
+                  <AvatarFallback className="text-2xl">{user?.name ? user.name.slice(0, 2).toUpperCase() : "??"}</AvatarFallback>
                 </Avatar>
                 <Button
                   variant="outline"
@@ -93,7 +74,7 @@ export default function ProfilePage() {
                     <Label htmlFor="fullname">Full Name</Label>
                     <Input
                       id="fullname"
-                      defaultValue={userData.name || "N/A"}
+                      defaultValue={user.name || "N/A"}
                       className="bg-gray-800 border-gray-700 focus:border-purple-500"
                     />
                   </div>
@@ -104,7 +85,7 @@ export default function ProfilePage() {
                   <Input
                     id="email"
                     type="email"
-                    defaultValue={userData.email || "N/A"}
+                    defaultValue={user.email || "N/A"}
                     className="bg-gray-800 border-gray-700 focus:border-purple-500"
                   />
                 </div>
@@ -113,7 +94,7 @@ export default function ProfilePage() {
                   <Label htmlFor="username">Username</Label>
                   <Input
                     id="username"
-                    defaultValue={userData.username || "N/A"}
+                    defaultValue={user.username || "N/A"}
                     className="bg-gray-800 border-gray-700 focus:border-purple-500"
                   />
                 </div>
@@ -122,7 +103,7 @@ export default function ProfilePage() {
                   <Label htmlFor="bio">Bio</Label>
                   <Textarea
                     id="bio"
-                    defaultValue={userData.bio || "Tell us about yourself..."}
+                    defaultValue={user.bio || "Tell us about yourself..."}
                     className="min-h-[100px] bg-gray-800 border-gray-700 focus:border-purple-500"
                   />
                 </div>
