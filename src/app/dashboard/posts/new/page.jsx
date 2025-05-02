@@ -23,6 +23,7 @@ import { AIPostGenerator } from "@/components/dashboard/ai-post-generator";
 import { AIPostAnalyzer } from "@/components/dashboard/ai-post-analyzer";
 import { ImageUpload } from "@/components/dashboard/image-upload";
 import { ArrowLeft, Save } from "lucide-react";
+import api from "@/lib/axios";
 
 export default function NewPostPage() {
   const router = useRouter();
@@ -35,15 +36,26 @@ export default function NewPostPage() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const formData = new FormData(e.target);
+    formData.append("content", postContent);
 
-    // Here you would typically send the form data to your API
-    console.log({
-      title: postTitle,
-      excerpt: postExcerpt,
-      content: postContent,
-    });
+    formData.append("title", postTitle);
+    formData.append("excerpt", postExcerpt);
+
+    console.log("Form Data:", formData);
+
+    try {
+      const response = await api.post("/posts", formData);
+      if (response?.data?.success) {
+        toast.success("Post created successfully!");
+        router.push("/dashboard/posts");
+      } else {
+        toast.error(response?.data?.message || "Post creation failed.");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || "Something went wrong!");
+    }
 
     setIsSubmitting(false);
     router.push("/dashboard/posts");

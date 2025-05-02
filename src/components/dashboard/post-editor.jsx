@@ -17,7 +17,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { marked } from "marked"; // Ensure you have marked installed
+import { marked } from "marked";
+import Markdown from "react-markdown"; // Ensure you have marked installed
 
 export function PostEditor({ value, onChange }) {
   const [activeTab, setActiveTab] = useState("write");
@@ -51,7 +52,7 @@ export function PostEditor({ value, onChange }) {
         insertMarkdown("*", "*");
         break;
       case "h1":
-        insertMarkdown("# ");
+        insertMarkdown("#");
         break;
       case "h2":
         insertMarkdown("## ");
@@ -156,10 +157,9 @@ export function PostEditor({ value, onChange }) {
               "prose-a:text-purple-400 prose-blockquote:border-l-purple-600 prose-blockquote:text-gray-300",
               "prose-code:bg-gray-700 prose-code:text-gray-300 prose-pre:bg-gray-700"
             )}
-            dangerouslySetInnerHTML={{
-              __html: renderMarkdown(value),
-            }}
-          />
+          >
+            {renderMarkdown(value)}
+          </div>
         </TabsContent>
       </Tabs>
     </div>
@@ -181,9 +181,24 @@ function ToolbarButton({ icon, label, onClick }) {
     </Button>
   );
 }
+function cleanMarkdown(rawText) {
+  if (!rawText) return '';
+
+  let cleaned = rawText;
+
+  // Replace escaped \n with real newlines
+  cleaned = cleaned.replace(/\\n/g, '\n');
+
+  // Normalize headings: ## → #
+  cleaned = cleaned.replace(/^## /gm, '# ');
+
+  // Ensure proper code block markers (if backend escapes them)
+  cleaned = cleaned.replace(/\\`\\`\\`/g, '```');
+
+  return cleaned.trim();
+}
 
 // Simple markdown renderer
 function renderMarkdown(markdown) {
-  // Assume 'marked' is globally imported or available
-  return marked.parse(markdown || "");
+  return <Markdown>{cleanMarkdown(markdown)}</Markdown>;
 }
