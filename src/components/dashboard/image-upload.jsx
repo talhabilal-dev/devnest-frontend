@@ -4,47 +4,36 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Upload, X, ImageIcon } from "lucide-react";
 
-export function ImageUpload({ initialImage }) {
-  const [image, setImage] =
-    (useState(initialImage || null));
+export function ImageUpload({ initialImage, onFileSelect }) {
+  const [file, setFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(initialImage || null);
   const [isDragging, setIsDragging] = useState(false);
 
   const handleFileChange = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setImage(event.target?.result);
-      };
-      reader.readAsDataURL(file);
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile && selectedFile.type.startsWith("image/")) {
+      setFile(selectedFile);
+      setPreviewUrl(URL.createObjectURL(selectedFile));
+      onFileSelect?.(selectedFile); // notify parent if needed
     }
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = () => {
-    setIsDragging(false);
   };
 
   const handleDrop = (e) => {
     e.preventDefault();
     setIsDragging(false);
 
-    const file = e.dataTransfer.files?.[0];
-    if (file && file.type.startsWith("image/")) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setImage(event.target?.result);
-      };
-      reader.readAsDataURL(file);
+    const droppedFile = e.dataTransfer.files?.[0];
+    if (droppedFile && droppedFile.type.startsWith("image/")) {
+      setFile(droppedFile);
+      setPreviewUrl(URL.createObjectURL(droppedFile));
+      onFileSelect?.(droppedFile);
     }
   };
 
   const handleRemove = () => {
-    setImage(null);
+    setFile(null);
+    setPreviewUrl(null);
+    onFileSelect?.(null);
   };
 
   return (
@@ -57,10 +46,10 @@ export function ImageUpload({ initialImage }) {
         onChange={handleFileChange}
       />
 
-      {image ? (
+      {previewUrl ? (
         <div className="relative rounded-md overflow-hidden">
           <img
-            src={image || "/placeholder.svg"}
+            src={previewUrl}
             alt="Featured"
             className="w-full h-48 object-cover"
           />
@@ -93,8 +82,11 @@ export function ImageUpload({ initialImage }) {
               : "border-gray-700 bg-gray-800/50"
           }`}
           onClick={() => document.getElementById("featured-image")?.click()}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setIsDragging(true);
+          }}
+          onDragLeave={() => setIsDragging(false)}
           onDrop={handleDrop}
         >
           <ImageIcon className="h-10 w-10 text-gray-400 mb-2" />
