@@ -27,30 +27,45 @@ import api from "@/lib/axios";
 
 export default function NewPostPage() {
   const router = useRouter();
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [postContent, setPostContent] = useState("");
   const [postTitle, setPostTitle] = useState("");
   const [postExcerpt, setPostExcerpt] = useState("");
+  const [category, setCategory] = useState("");
+  const [tags, setTags] = useState("");
+  const [status, setStatus] = useState("draft");
+  const [commentsEnabled, setCommentsEnabled] = useState(true);
+  const [featured, setFeatured] = useState(false);
+  const [featuredImage, setFeaturedImage] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const formData = new FormData(e.target);
-    formData.append("content", postContent);
-
+    const formData = new FormData();
     formData.append("title", postTitle);
     formData.append("excerpt", postExcerpt);
-
-    console.log("Form Data:", formData);
+    formData.append("content", postContent);
+    formData.append("category", category);
+    formData.append("tags", tags);
+    formData.append("status", status);
+    formData.append("commentsEnabled", commentsEnabled);
+    formData.append("featured", featured);
+    console.log("featuredImage", featuredImage);
+    if (featuredImage) {
+      formData.append("featuredImage", featuredImage);
+    }
 
     try {
       const response = await api.post("/posts", formData);
       if (response?.data?.success) {
         toast.success("Post created successfully!");
         router.push("/dashboard/posts");
+        setIsSubmitting(false);
       } else {
         toast.error(response?.data?.message || "Post creation failed.");
+        setIsSubmitting(false);
       }
     } catch (error) {
       console.error(error);
@@ -58,7 +73,6 @@ export default function NewPostPage() {
     }
 
     setIsSubmitting(false);
-    router.push("/dashboard/posts");
   };
 
   return (
@@ -116,7 +130,7 @@ export default function NewPostPage() {
 
               <div className="space-y-2">
                 <Label>Featured Image</Label>
-                <ImageUpload />
+                <ImageUpload onFileSelect={(file) => setFeaturedImage(file)} />
               </div>
             </div>
           </CardContent>
@@ -152,7 +166,7 @@ export default function NewPostPage() {
                 <h3 className="text-lg font-medium">Categories & Tags</h3>
                 <div className="space-y-2">
                   <Label htmlFor="category">Category</Label>
-                  <Select>
+                  <Select onValueChange={(val) => setCategory(val)}>
                     <SelectTrigger className="bg-gray-800 border-gray-700">
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
@@ -172,6 +186,8 @@ export default function NewPostPage() {
                     id="tags"
                     placeholder="Enter tags separated by commas"
                     className="bg-gray-800 border-gray-700 focus:border-purple-500"
+                    value={tags}
+                    onChange={(e) => setTags(e.target.value)}
                   />
                 </div>
               </div>
@@ -180,7 +196,10 @@ export default function NewPostPage() {
                 <h3 className="text-lg font-medium">Publishing Options</h3>
                 <div className="space-y-2">
                   <Label htmlFor="status">Status</Label>
-                  <Select defaultValue="draft">
+                  <Select
+                    defaultValue="draft"
+                    onValueChange={(val) => setStatus(val)}
+                  >
                     <SelectTrigger className="bg-gray-800 border-gray-700">
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>
@@ -195,14 +214,22 @@ export default function NewPostPage() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="comments-enabled">Enable Comments</Label>
-                    <Switch id="comments-enabled" defaultChecked />
+                    <Switch
+                      id="comments-enabled"
+                      checked={commentsEnabled}
+                      onCheckedChange={setCommentsEnabled}
+                    />
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="featured">Featured Post</Label>
-                    <Switch id="featured" />
+                    <Switch
+                      id="featured"
+                      checked={featured}
+                      onCheckedChange={setFeatured}
+                    />
                   </div>
                 </div>
               </div>
